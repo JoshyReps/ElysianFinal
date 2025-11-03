@@ -1,0 +1,68 @@
+<%- include('header-auth') %>
+
+<section id="my-payments" class="flex-center">
+  <div class="payments-wrapper">
+    <h1>My Payments</h1>
+
+    <% if (payments.length === 0) { %>
+      <p class="no-payments">You have no payment records yet.</p>
+    <% } else { %>
+      <div class="table-container">
+        <table class="payments-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Reference</th>
+              <th>Amount</th>
+              <th>Phone</th>
+              <th>Verified</th>
+              <th>Status</th>
+              <th>Proof</th>
+              <th>Submitted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% payments.forEach(p => { %>
+              <tr>
+                <td data-label="ID"><%= p.id %></td>
+                <td data-label="Reference"><%= p.reference %></td>
+                <td data-label="Amount">₱<%= p.amount %>.00</td>
+                <td data-label="Phone"><%= p.phone %></td>
+                <td data-label="Verified">
+                  <% if (p.verified) { %>
+                    <span class="badge verified">Verified</span>
+                  <% } else { %>
+                    <span class="badge unverified">Unverified</span>
+                  <% } %>
+                </td>
+                <td data-label="Status">
+                  <% if (p.status === 'Pending') { %>
+                    <span class="badge pending">Pending</span>
+                  <% } else if (p.status === 'Delivered') { %>
+                    <span class="badge delivered">Delivered</span>
+                  <% } else { %>
+                    <span class="badge unknown"><%= p.status %></span>
+                  <% } %>
+                </td>
+                <td data-label="Proof">
+                  <% if (p.proof_path) { %>
+                    <a href="/<%= p.proof_path %>" target="_blank" class="proof-link">View</a>
+                  <% } else { %>
+                    <span class="no-proof">None</span>
+                  <% } %>
+                </td>
+                <td data-label="Submitted"><%= new Date(p.submitted_at).toLocaleString() %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+    <div class="payments-actions">
+      <a href="/order" class="back-btn">← Back to Orders</a>
+    </div>
+  </div>
+</section>
+
+<%- include('footer') %>

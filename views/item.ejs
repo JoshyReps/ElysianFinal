@@ -1,0 +1,37 @@
+<% if(locals.user) { %>
+    <%- include('header-auth') %>
+<% } else { %>
+    <%- include('header') %>
+<% } %>
+
+
+<section id="main-item" class="flex-center">
+
+    <div class="item-img-con">
+        <img src="images\items\1.png" alt="">
+    </div>
+
+    <div class="item-text-con flex-center">
+        <div class="item-title">
+            <h2>Blue Birthday Premium</h2>
+        </div>  
+        <div class="item-price">
+            ₱150.00
+        </div>
+        <div class="item-qty flex-center">
+            <h4>Quantity</h4>
+            <div class="flex-center">
+                <button>+</button>
+                <p>1</p>
+                <button>-</button>
+            </div>
+        </div>
+        <div class="item-btn">
+            <button>Add to Cart</button>
+        </div>
+    </div>
+
+</section>
+
+    
+<%- include('footer') %>

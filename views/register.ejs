@@ -1,0 +1,54 @@
+<%- include('header') %>
+  <section id="register-page" class="flex-center">
+    <div class="flex-center register-con">
+      <h2>“Your sweet cravings, one click away”</h2>
+
+      <div class="log-in-container flex-center">
+        <h2>Sign Up</h2>
+
+        <div class="login-register">
+          have an account?
+          <a href="/login">login</a>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+          <p style="color: red; margin-bottom: 10px;"><%= error %></p>
+        <% } %>
+
+        <form action="/register" id="form1" method="post"></form>
+        <label for="username">Email</label>
+        <input type="email" form="form1" name="username" class="input-txt">
+        <label for="password">Password</label>
+        <input type="password" form="form1" name="password" class="input-txt">
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" form="form1" name="confirm-password" class="input-txt">
+        <input type="submit" form="form1" class="input-btn">
+      </div>
+    </div>
+
+    <div id="verifyModal" class="modal">
+      <div class="modal-content">
+        <h3>Verify Your Email</h3>
+        <p>We’ve sent a verification link to your email address. Please check your inbox to activate your account before logging in.</p>
+        <button id="closeModal">OK</button>
+      </div>
+    </div>
+    
+  </section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="main.js"></script>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("verifyModal");
+        const closeBtn = document.getElementById("closeModal");
+        modal.style.display = "flex";
+        closeBtn.addEventListener("click", () => modal.style.display = "none");
+      });
+    </script>
+  <% } %>
+</body>
+</html>

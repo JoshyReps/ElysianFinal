@@ -1,0 +1,359 @@
+
+    <% if(locals.user) { %>
+        <%- include('header-auth') %>
+    <% } else { %>
+        <%- include('header') %>
+    <% } %>
+        
+
+    <section id="trend" class="f-container">
+
+        <div class="swiper mySwiper flex-center">
+
+            <div class="swiper-overlay flex-center">
+
+                <div class="swiper-overlay-img flex-center">
+                    <img src="images\icon\elysian-logo1.png" alt="">
+                </div>
+
+                <div class="swiper-overlay-text flex-center">
+                    <h1>The Elysian Bytes</h1>
+                    <h2>Sweet Moments Baked Fresh in | Toril</h2>
+                </div>
+
+                <a href="/gallery">View Gallery</a>
+
+            </div>
+
+
+            <div class="swiper-wrapper home-banner">
+                <div class="swiper-slide banner-slide">
+                    <img src="images\banner\1.png" alt="">
+                </div>
+                <div class="swiper-slide banner-slide">
+                    <img src="images\banner\2.png" alt="">
+                </div>
+                <div class="swiper-slide banner-slide">
+                    <img src="images\banner\3.png" alt="">
+                </div>
+                <div class="swiper-slide banner-slide">
+                    <img src="images\banner\4.png" alt="">
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <div class="wave trend-wave-1">
+            <img class="wave" src="images\waves\trend-wave-1.png" alt="">
+            <div id="trend-h1" class="flex-center">
+                <img src="images/trend-sign.png" alt="">
+            </div>
+        </div>
+
+        <section id="trend-2" class="trend-section flex-center">
+        <div class="swiper trendSwiper flex-center">
+            <div class="swiper-wrapper">
+            <% if (locals.trending && trending.length > 0) { trending.forEach((trend) => { %>
+
+                <div class="swiper-slide flex-center">
+                <form class="hidden" action="/order" method="POST" id="trend-button-<%= trend.id %>"></form>
+                <input class="hidden" form="trend-button-<%= trend.id %>" type="hidden" value="<%= trend.id %>" name="cake_id">
+
+                <div class="trend-item flex-center">
+                    <div class="trend-item-img-con flex-center">
+                    <div class="trend-item-likes-con">
+                        <button type="button" class="flex-center like-btn" data-cakeid="<%= trend.id %>">
+                        <img src="images/icon/<%= locals.likedIds && likedIds.includes(trend.id) ? 'heart-filled.png' : 'heart.png' %>" alt="">
+                        <span><%= trend.likes %></span>
+                        </button>
+                    </div>
+                    <img src="images/new/<%= trend.img %>" alt="">
+                    </div>
+                    <div class="trend-text-details flex-center">
+                        <h2><%= trend.name %></h2>
+                        <p>₱<%= trend.price %>.00</p>
+                    </div>
+                    <button type="submit" form="trend-button-<%= trend.id %>" class="order-btn flex-center" <% if(locals.orders) { %> onclick="order(<%= orders %>)" <% } %>>
+                    <img src="images/icon/order.svg" alt="">
+                    Order
+                    </button>
+                </div>
+                </div>
+
+            <% }) } %>
+            </div>
+
+            <div class="swiper-button-next trend-next trend-button-style"></div>
+            <div class="swiper-button-prev trend-prev trend-button-style"></div>
+            <div class="swiper-pagination trend-pagination cake-pagination"></div>
+        </div>
+        </section>
+
+
+    </section>
+
+
+
+    <section class="custom-cakes-section">
+        <div class="custom-cakes-content">
+            <div class="custom-text">
+            <img src="images/elysianTextRed.png" alt="Elysian Bytes Logo" class="custom-logo">
+            <h3 class="custom-title">CUSTOM CAKES</h3>
+            <p>Celebrate every moment with a handcrafted cake made with love by Elysian Bytes.</p>
+            <a class="custom-btn" href="/custom">LEARN MORE</a >
+            </div>
+            <div class="custom-cakes-gallery">
+            <img src="images\cakes\1.png" alt="Cake 1" class="cake-img cake1">
+            <img src="images\cakes\2.png" alt="Cake 2" class="cake-img cake2">
+            <img src="images\cakes\3.png" alt="Cake 3" class="cake-img cake3">
+            </div>
+        </div>
+    </section>
+
+
+    <section id="buttons" class="flex-center">
+        
+        <form class="hidden" action="/gallery" method="post" id="gallery-choc"></form>
+        <form class="hidden" action="/gallery" method="post" id="gallery-eleg"></form>
+        <form class="hidden" action="/gallery" method="post" id="gallery-birth"></form>
+        <form class="hidden" action="/gallery" method="post" id="gallery-vanil"></form>
+        
+        <input type="hidden" value="chocolate" name="type" form="gallery-choc">
+        <input type="hidden" value="elegant" name="type" form="gallery-eleg">
+        <input type="hidden" value="birthday" name="type" form="gallery-birth">
+        <input type="hidden" value="vanilla" name="type" form="gallery-vanil">
+        
+
+        <button class="cake-category-btn flex-center" type="submit" form="gallery-choc">
+            <div>Chocolate Cakes</div>
+            <img src="images\cakes\chocolateStrip.webp" alt="">
+        </button>
+
+        <button class="cake-category-btn flex-center" type="submit" form="gallery-eleg">
+            <div>Elegant Cakes</div>
+            <img src="images\cakes\purpleDelight.webp" alt="">
+        </button>
+
+        <button class="cake-category-btn flex-center" type="submit" form="gallery-birth">
+            <div>Birtday Cakes</div>
+            <img src="images\cakes\blueBirthday.webp" alt="">
+        </button>
+
+        <button class="cake-category-btn flex-center" type="submit" form="gallery-vanil">
+            <div>Vanilla Cakes</div>
+            <img src="images\cakes\whiteRose.webp" alt="">
+        </button>
+
+    </section>  
+
+    <section id="sliders" class="flex-center">
+
+        <div class="chocolate-slider category flex-center">
+
+            <form action="/gallery" class="hidden" id="gallery-ch" method="POST"></form>
+
+            <input class="hidden" type="hidden" value="chocolate" name="category" form="gallery-ch">
+
+            <div class="slider-container swiper cakeSwiper">
+
+                    <div class="card-list swiper-wrapper">
+                        
+                        <%if(locals.choc_cakes && choc_cakes.length > 0) { choc_cakes.forEach(cake => { %>
+
+                        <form class="hidden" action="/order" method="POST" id="chocolate-button-<%=cake.id%>"></form>
+                            
+                        <input class="hidden" form="chocolate-button-<%=cake.id%>" type="hidden" value="<%=cake.id%>" name="cake_id">
+
+                        <div class="item-wrapper swiper-slide">
+                        <div class="card-item">
+                            <div class="card-img flex-center">
+                            <img src="images/new/<%= cake.img %>" alt="">
+                            <button type="button" class="flex-center like-btn" data-cakeid="<%=cake.id%>">  
+                                <img src="images/icon/<%= locals.likedIds && likedIds.includes(cake.id) ? 'heart-filled.png' : 'heart.png' %>" alt="">
+                                <span><%=cake.likes%></span>
+                            </button>
+                            </div>
+                            <div class="card-name">
+                            <%= cake.name %>
+                            </div>
+                            <div class="card-price">
+                            ₱<%= cake.price %>.00
+                            </div>
+                            <div class="card-bottom flex-center">
+                            <button type="submit" class="flex-center" form="chocolate-button-<%= cake.id %>" <% if(locals.orders) { %> onclick="order(<%= orders %>)" <% } %>>
+                                <img src="images/icon/order.svg" alt="">
+                                Order
+                            </button>
+                            </div>
+                        </div>
+                        </div>
+
+                        <% })} %>
+
+                    </div>
+
+                    <div class="swiper-pagination cake-pagination"></div>
+                    <div class="swiper-button-prev cake-prev swiper-button-style"></div>
+                    <div class="swiper-button-next cake-next swiper-button-style"></div>
+            </div>
+
+            <div class="text-slider flex-center">
+                <h2>Chocolate Cakes</h2>
+                <input type="submit" value="See More" form="gallery-choc">
+            </div>
+
+            <img class="banner-img chocolate-banner" src="images\banner\chocolate-cake.png" alt="">
+
+        </div>
+
+        <div class="elegant-slider category flex-center">
+
+            <form action="/gallery/elegant" class="hidden" id="gallery-ch" method="POST"></form>
+
+            <input class="hidden" type="hidden" value="chocolate" name="category" form="gallery-ch">
+
+            <div class="slider-container swiper cakeSwiper">
+
+                    <div class="card-list swiper-wrapper">
+
+                        <%if(locals.elegant_cakes && elegant_cakes.length > 0) { elegant_cakes.forEach(cake => { %>
+
+                        <form class="hidden" action="/order" method="POST" id="elegant-button-<%=cake.id%>"></form>
+                            
+                        <input class="hidden" form="elegant-button-<%=cake.id%>" type="hidden" value="<%=cake.id%>" name="cake_id">
+
+                        <div class="item-wrapper swiper-slide">
+                            <div class="card-item">
+                                <div class="card-img flex-center">
+                                    <img src="images\new\<%=cake.img%>" alt="">
+                                    <button type="button" class="flex-center like-btn" data-cakeid="<%=cake.id%>">  
+                                        <img src="images/icon/<%= locals.likedIds && likedIds.includes(cake.id) ? 'heart-filled.png' : 'heart.png' %>" alt="">
+                                        <span><%=cake.likes%></span>
+                                    </button>
+                                </div>
+                                <div class="card-name">
+                                    <%=cake.name%>
+                                </div>
+                                <div class="card-price">
+                                    ₱<%=cake.price%>.00
+                                </div>
+                                <div class="card-bottom flex-center">
+                                    <button type="submit" class="flex-center" form="elegant-button-<%=cake.id%>" <% if(locals.orders) { %> onclick="order(<%=orders%>)" <% } %>>
+                                        <img src="images/icon/order.svg" alt="">
+                                        Order
+                                    </button>
+                                </div>
+                            </div>  
+                        </div>
+
+                        <% })} %>
+
+                    </div>
+
+                    <div class="swiper-pagination cake-pagination"></div>
+                    <div class="swiper-button-prev cake-prev swiper-button-style"></div>
+                    <div class="swiper-button-next cake-next swiper-button-style"></div>
+            </div>
+
+            <div class="text-slider flex-center">
+                <h2>Elegant Cakes</h2>
+                <input type="submit" value="See More" form="gallery-eleg">
+            </div>
+
+            <img class="banner-img chocolate-banner" src="images\banner\elegant-cake.png" alt="">
+
+        </div>
+
+        <div id="loginPopup" class="login-popup-overlay flex-center hidden">
+            <div class="login-popup-box flex-center">
+                <h2>“Back for Another Slice?”</h2>
+                <p>Please log in to like cakes</p>
+
+                <div class="login-popup-actions flex-center">
+                <a href="/login" class="popup-btn login-btn">Log In</a>
+                <button id="closeLoginPopup" class="popup-btn close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <script>
+
+        const loginPopup = document.getElementById("loginPopup");
+        const closeLoginPopup = document.getElementById("closeLoginPopup");
+
+        closeLoginPopup.addEventListener("click", () => {
+            loginPopup.classList.add("hidden");
+        });
+
+        loginPopup.addEventListener("click", (e) => {
+            if (e.target === loginPopup) loginPopup.classList.add("hidden");
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+        document.querySelectorAll(".like-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+
+                const cakeId = btn.dataset.cakeid;
+                const countSpan = btn.querySelector("span");
+
+                try {
+
+                    const res = await fetch(`/like/${cakeId}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        let count = parseInt(countSpan.textContent);
+                        btn.querySelector("img").src = data.liked
+                            ? "images/icon/heart-filled.png"
+                            : "images/icon/heart.png";
+                        countSpan.textContent = data.liked ? count + 1 : count - 1;
+                    } else if (res.status === 401) {
+                        loginPopup.classList.remove("hidden");
+                    }
+
+                } catch (err) {
+                    console.error("Like error:", err);
+                }
+            });
+        });
+
+    document.querySelectorAll(".order-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+
+            e.preventDefault();
+
+            const formId = btn.getAttribute("form");
+            const form = document.getElementById(formId);
+
+            if (!form) {
+                console.error("Form not found for", formId);
+                return;
+            }
+
+            try {
+                const res = await fetch("/auth-check", { method: "GET" });
+
+                if (res.status === 401) {
+                    loginPopup.classList.remove("hidden");
+                } else {
+                    form.submit();
+                }
+            } catch (err) {
+                console.error("Order button error:", err);
+            }
+        });
+    });
+});
+
+</script>
+
+
+
+<%- include('footer') %>

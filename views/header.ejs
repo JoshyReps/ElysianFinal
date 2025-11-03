@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElysianBytes</title>
+
+    <style>
+        /* .loader-wrapper {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            background: #faf2f2;
+            z-index: 150;
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+        .loader { position: relative; }
+        .one, .two {
+            position: absolute;
+            border-radius: 50%;
+            height: 20px; width: 20px;
+        }
+        .one {
+            background: #fff;
+            opacity: 0;
+            animation: loading 1.3s .65s infinite;
+        }
+        .two {
+            background: #FF4081;
+            opacity: 0;
+            animation: loading 1.3s infinite;
+        }
+        @keyframes loading {
+            0%   { opacity: 0; transform: scale(.15); box-shadow: 0 0 2px rgba(0,0,0,.1); }
+            50%  { opacity: 1; transform: scale(2);   box-shadow: 0 0 10px rgba(0,0,0,.1); }
+            100% { opacity: 0; transform: scale(.15); box-shadow: 0 0 2px rgba(0,0,0,.1); }
+        } */
+    </style>
+
+    <link
+    rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- <section class="loader-wrapper">
+        <div class="loader">
+            <div class="one"></div>
+            <div class="two"></div>
+        </div>
+    </section> -->
+
+    <nav class="nav-bar flex-center nav-bar-top">
+        <div class="nav-con nav-1 flex-center">
+            <a href="/" class="nav-1-logo"><img src="images/elysianText.png" alt=""></a>
+        </div>
+        <div class="nav-con nav-2 flex-center">
+            <a href="/#trend-h1" class="link-1 link nav-link flex-center">
+                TREND
+            </a>
+            <a href="/gallery" class="link-2 link nav-link flex-center">
+                GALLERY
+            </a>
+            <a href="#main-footer" class="link-3 link nav-link flex-center">
+                CONTACT
+            </a>
+        </div>
+        <div class="nav-con nav-3 flex-center">
+            <div class="but-2 nav-but flex-center">
+                <img src="images\icon\signIn.svg" alt="">  
+                <a href="/login" class="black nav-link-but">
+                    Log In
+                </a>
+            </div>
+            <div class="but-3 nav-but flex-center">
+                <div class="order-amount " >
+                    0
+                </div>
+                <a href="" class="cart-but flex-center">
+                    <img src="images\icon\tray.svg" alt="">
+                </a>
+            </div>
+        </div>
+
+        <div class="nav-burger flex-center hidden">
+            <button class="flex-center">
+                <img src="images\icon\burger.svg" alt="">
+            </button>
+        </div>
+    </nav>
+
+    <header id="header" class="flex-center header-top">
+        <div id="motto" class="flex-center">
+            “Savor the Moment One Byte at a Time”
+        </div>
+    </header>
+
+    <div class="burger-popup flex-center hidden">
+        <a href="/#trend-h1" class="flex-center b-1">
+            Trend
+        </a>
+        <a href="/gallery" class="flex-center">
+            Gallery
+        </a>
+        <a href="#main-footer" class="flex-center">
+            Contact
+        </a>
+        <a href="/login" class="black nav-link-bu flex-center">
+            Log In
+        </a>
+    </div>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const burgerButton = document.querySelector(".nav-burger button");
+            const burgerPopup = document.querySelector(".burger-popup");
+            const navLinks = burgerPopup.querySelectorAll("a");
+
+            if (!burgerButton || !burgerPopup) return;
+
+            burgerButton.addEventListener("click", () => {
+                burgerPopup.classList.toggle("hidden"); 
+                document.body.classList.toggle("no-scroll"); 
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener("click", () => {
+                burgerPopup.classList.add("hidden");
+                document.body.classList.remove("no-scroll");
+                });
+            });
+        });
+
+    </script>
+    

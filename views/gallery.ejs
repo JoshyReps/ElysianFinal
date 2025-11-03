@@ -1,0 +1,222 @@
+<% if(locals.user) { %>
+    <%- include('header-auth') %>
+<% } else { %>
+    <%- include('header') %>
+<% } %>
+
+<section id="gallery" class="flex-center">
+    <div class="gallery-banner">
+        <img src="images/banner/<%= banner %>.png" alt="">
+    </div>
+
+    <div class="gallery-main flex-center">
+        <div class="gallery-browser-wrapper">
+
+            <div class="gallery-controls flex-center">
+                <form id="galleryFilterForm" action="/gallery" method="GET" class="gallery-filter flex-center">
+                    <input
+                        type="text"
+                        name="search"
+                        class="search-input"
+                        placeholder="Search for cakes..."
+                        value="<%= typeof search !== 'undefined' ? search : '' %>"
+                    />
+
+                    <select name="sort" class="sort-select">
+                        <option value="">Sort by</option>
+                        <option value="price_asc" <%= sort === 'price_asc' ? 'selected' : '' %>>Least Expensive</option>
+                        <option value="price_desc" <%= sort === 'price_desc' ? 'selected' : '' %>>Most Expensive</option>
+                        <option value="likes_desc" <%= sort === 'likes_desc' ? 'selected' : '' %>>Most Liked</option>
+                        <option value="likes_asc" <%= sort === 'likes_asc' ? 'selected' : '' %>>Least Liked</option>
+                    </select>
+
+                    <button type="submit" class="filter-btn">Apply</button>
+                </form>
+            </div>
+
+            <div class="gallery-browse">
+
+                <% if(locals.cakes && cakes.length > 0) { cakes.forEach(cake => { %>
+
+                <form class="hidden" action="/order" method="POST" id="gallery-button-<%=cake.id%>"></form>
+                <input class="hidden" form="gallery-button-<%=cake.id%>" type="hidden" value="<%=cake.id%>" name="cake_id">
+
+                <div class="gallery-item flex-center">
+                <div class="gallery-img">
+                    <img src="images/new/<%=cake.img%>" alt="">
+                    <button type="button" class="flex-center like-btn" data-cakeid="<%=cake.id%>">  
+                    <img src="images/icon/<%= locals.likedIds && likedIds.includes(cake.id) ? 'heart-filled.png' : 'heart.png' %>" alt="">
+                    <span><%=cake.likes%></span>
+                    </button>
+                </div>
+
+                <div class="gallery-text flex-center">
+                    <div class="gallery-name"><%=cake.name%></div>
+                    <div class="gallery-price">₱<%=cake.price%>.00</div>
+                </div>
+
+                <div class="gallery-button flex-center">
+                    <button type="submit" class="flex-center" form="gallery-button-<%=cake.id%>">
+                    <img src="images/icon/order.svg" alt="">
+                    Order
+                    </button>
+                </div>
+                </div>
+
+                <% })} else { %>
+                <div class="no-results flex-center">
+                    <p>No cakes found matching your search 🍰</p>
+                </div>
+                <% } %>
+            </div>
+
+            <div class="pagination flex-center">
+                <% if (totalPages && totalPages > 1) { %>
+                <div class="pagination-buttons flex-center">
+                <% if (currentPage > 1) { %>
+                    <a href="?page=<%= currentPage - 1 %>&search=<%= search || '' %>&sort=<%= sort || '' %>" class="pagination-btn">Previous</a>
+                <% } %>
+
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="?page=<%= i %>&search=<%= search || '' %>&sort=<%= sort || '' %>" class="pagination-btn <%= i === currentPage ? 'active' : '' %>">
+                    <%= i %>
+                    </a>
+                <% } %>
+
+                <% if (currentPage < totalPages) { %>
+                    <a href="?page=<%= currentPage + 1 %>&search=<%= search || '' %>&sort=<%= sort || '' %>" class="pagination-btn">Next</a>
+                <% } %>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="gallery-input flex-center">
+            <form class="hidden" action="/gallery" method="post" id="gallery-choc"></form>
+            <form class="hidden" action="/gallery" method="post" id="gallery-eleg"></form>
+            <form class="hidden" action="/gallery" method="post" id="gallery-birth"></form>
+            <form class="hidden" action="/gallery" method="post" id="gallery-vanil"></form>
+
+            <input type="hidden" value="chocolate" name="type" form="gallery-choc">
+            <input type="hidden" value="elegant" name="type" form="gallery-eleg">
+            <input type="hidden" value="birthday" name="type" form="gallery-birth">
+            <input type="hidden" value="vanilla" name="type" form="gallery-vanil">
+
+            <button class="cake-category-btn flex-center" type="submit" form="gallery-choc">
+                <div>Chocolate Cakes</div>
+                <img src="images/cakes/chocolateStrip.webp" alt="">
+            </button>
+
+            <button class="cake-category-btn flex-center" type="submit" form="gallery-eleg">
+                <div>Elegant Cakes</div>
+                <img src="images/cakes/purpleDelight.webp" alt="">
+            </button>
+
+            <button class="cake-category-btn flex-center" type="submit" form="gallery-birth">
+                <div>Birthday Cakes</div>
+                <img src="images/cakes/blueBirthday.webp" alt="">
+            </button>
+
+            <button class="cake-category-btn flex-center" type="submit" form="gallery-vanil">
+                <div>Vanilla Cakes</div>
+                <img src="images/cakes/whiteRose.webp" alt="">
+            </button>
+        </div>
+    </div>
+</section>
+
+<div id="loginPopup" class="login-popup-overlay flex-center hidden">
+    <div class="login-popup-box flex-center">
+        <h2>“Back for Another Slice?”</h2>
+        <p>Please log in to like cakes</p>
+        <div class="login-popup-actions flex-center">
+            <a href="/login" class="popup-btn login-btn">Log In</a>
+            <button id="closeLoginPopup" class="popup-btn close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+        
+        const loginPopup = document.getElementById("loginPopup");
+        const closeLoginPopup = document.getElementById("closeLoginPopup");
+
+        closeLoginPopup.addEventListener("click", () => {
+            loginPopup.classList.add("hidden");
+        });
+
+        loginPopup.addEventListener("click", (e) => {
+            if (e.target === loginPopup) loginPopup.classList.add("hidden");
+        });
+
+        document.querySelectorAll(".like-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const cakeId = btn.dataset.cakeid;
+                const countSpan = btn.querySelector("span");
+
+                try {
+                    const res = await fetch(`/like/${cakeId}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                    });
+
+                    if (res.status === 401) {
+                        loginPopup.classList.remove("hidden");
+                        return;
+                    }
+
+                    const data = await res.json();
+                    if (data.success) {
+                        let count = parseInt(countSpan.textContent);
+                        btn.querySelector("img").src = data.liked
+                            ? "images/icon/heart-filled.png"
+                            : "images/icon/heart.png";
+                        countSpan.textContent = data.liked ? count + 1 : count - 1;
+                    }
+
+                } catch (err) {
+                    console.error("Like error:", err);
+                }
+            });
+        });
+
+        
+        document.querySelectorAll('.gallery-button button[type="submit"]').forEach(btn => {
+
+            btn.addEventListener("click", async (e) => {
+
+                e.preventDefault();
+                const formId = btn.getAttribute("form");
+                const targetForm = document.getElementById(formId);
+
+                if (!targetForm) return;
+
+                try {
+                    const res = await fetch("/auth-check", { method: "GET" });
+
+                    if (res.status === 401) {
+                        loginPopup.classList.remove("hidden");
+                    } else {
+
+                        const orderCountEl = document.getElementById("cart-count");
+
+                        if (orderCountEl) {
+                            let currentCount = parseInt(orderCountEl.textContent.trim()) || 0;
+                            orderCountEl.textContent = currentCount + 1;
+                            orderCountEl.classList.add("pop");
+                            setTimeout(() => orderCountEl.classList.remove("pop"), 300);
+                        }
+
+                        targetForm.submit();
+                    }
+                } catch (err) {
+                    console.error("Order button error:", err);
+                }
+            });
+        });
+    });
+</script>
+
+<%- include('footer') %>

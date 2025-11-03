@@ -1,0 +1,171 @@
+<%- include('header-auth') %>
+
+<section class="custom-cake flex-center">
+  <div class="custom-cake-container">
+    <div class="custom-cake-img-con">
+      <img src="images/banner/customBanner.png" alt="">
+    </div>
+
+    <h1>Customize Your Cake</h1>
+    <p class="subtitle">Tell us your dream cake idea! We’ll get in touch with a quote within 24 hours.</p>
+
+    <form id="customCakeForm" enctype="multipart/form-data">
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required placeholder="Enter your name" />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Contact Number</label>
+        <input type="tel" id="phone" name="phone" required placeholder="09xxxxxxxxx" />
+      </div>
+
+      <div class="form-group">
+        <label for="occasion">Occasion / Theme</label>
+        <input type="text" id="occasion" name="occasion" placeholder="e.g. Birthday, Wedding, Graduation" />
+      </div>
+
+      <div class="form-group">
+        <label for="flavor">Flavor</label>
+        <select id="flavor" name="flavor" required>
+          <option value="" disabled selected>Select a flavor</option>
+          <option value="chocolate">Chocolate</option>
+          <option value="vanilla">Vanilla</option>
+          <option value="red velvet">Red Velvet</option>
+          <option value="ube">Ube</option>
+          <option value="custom">Other (Specify below)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="cakeType">Cake Size & Layers</label>
+        <select id="cakeType" name="cakeType" required>
+          <option value="" disabled selected>Select a size/layer combo</option>
+          <option value="6x4_1">6x4 (1 layer) — Serves 8–10</option>
+          <option value="8x4_1">8x4 (1 layer) — Serves 14–16</option>
+          <option value="10x4_1">10x4 (1 layer) — Serves 20–22</option>
+          <option value="8x4_6x4_2">8x4 with 6x4 on top (2 layers) — Serves 22–26</option>
+          <option value="10x4_8x4_2">10x4 with 8x4 on top (2 layers) — Serves 34–38</option>
+          <option value="10x4_8x4_6x4_3">10x4 + 8x4 + 6x4 (3 layers) — Serves 42–48</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="numberCake">Number Cake</label>
+        <select id="numberCake" name="numberCake">
+          <option value="no">No</option>
+          <option value="yes">Yes (Specify below)</option>
+        </select>
+        <small>If yes, please specify the number or shape in the notes section below.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message on Cake</label>
+        <input type="text" id="message" name="message" placeholder="Optional message (e.g. Happy Birthday!)" />
+      </div>
+
+      <div class="form-group">
+        <label for="date">Preferred Meetup Date</label>
+        <input type="date" id="date" name="date" required />
+        <small>Note: Please allow at least 5–7 days for preparation.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Upload Reference Image</label>
+        <input type="file" id="image" name="image" accept="image/*" />
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Additional Notes / Special Requests</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="Describe your idea, color scheme, decorations, number cake details, etc."></textarea>
+      </div>
+
+      <div class="price-display">
+        <p>Estimated Price: <span id="price">₱0</span></p>
+      </div>
+
+      <button type="submit" class="btn-submit">Submit Custom Order</button>
+    </form>
+
+    <p class="contact-note">
+      For urgent inquiries or follow-ups, email us directly at
+      <a href="mailto:mewtwokirisaki@gmail.com">mewtwokirisaki@gmail.com</a>
+    </p>
+  </div>
+</section>
+
+<script>
+  
+  const dateInput = document.getElementById('date');
+  const today = new Date();
+  today.setDate(today.getDate() + 5);
+  dateInput.min = today.toISOString().split('T')[0];
+
+  const priceDisplay = document.getElementById('price');
+  const flavor = document.getElementById('flavor');
+  const cakeType = document.getElementById('cakeType');
+
+  const priceMap = {
+    flavor: {
+      chocolate: 200,
+      vanilla: 180,
+      "red velvet": 250,
+      ube: 230,
+      custom: 270,
+    },
+    cakeType: {
+      "6x4_1": 600,
+      "8x4_1": 850,
+      "10x4_1": 1100,
+      "8x4_6x4_2": 1600,
+      "10x4_8x4_2": 2200,
+      "10x4_8x4_6x4_3": 2800
+    }
+  };
+
+  function calculatePrice() {
+    const f = flavor.value;
+    const c = cakeType.value;
+    if (!f || !c) {
+      priceDisplay.textContent = "₱0";
+      return;
+    }
+    let basePrice = priceMap.flavor[f] + priceMap.cakeType[c];
+    priceDisplay.textContent = "₱" + basePrice.toLocaleString();
+  }
+
+  [flavor, cakeType].forEach((el) => {
+    el.addEventListener("change", calculatePrice);
+  });
+
+  document.getElementById("customCakeForm").addEventListener("submit", async (e) => {
+    
+    e.preventDefault();
+
+    const formData = {
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      occasion: document.getElementById("occasion").value,
+      flavor: document.getElementById("flavor").value,
+      cakeType: document.getElementById("cakeType").value,
+      numberCake: document.getElementById("numberCake").value,
+      message: document.getElementById("message").value,
+      date: document.getElementById("date").value,
+      notes: document.getElementById("notes").value,
+      price: document.getElementById("price").textContent.replace("₱", "").trim()
+    };
+
+    const response = await fetch("/start-custom-payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      window.location.href = "/custom-payment";
+    }
+  });
+</script>
+

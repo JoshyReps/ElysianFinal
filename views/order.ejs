@@ -1,0 +1,285 @@
+<%- include('header-auth') %>
+
+  <section id="main-order" class="flex-center">
+
+      <h1>Your Tray</h1>
+      <a href="/my-payments" class="view-payments-btn">
+          View My Payments
+      </a>
+      <div class="inner-order-con flex-center">
+              <div class="order-display">
+
+              <% if(locals.cakes && cakes.length > 0) { cakes.forEach((order) => { %>
+          
+              <div class="order-con flex-center">
+
+                  <div class="order-img flex-center">
+                      <img src="images\new\<%=order.img%>" alt="">
+                  </div>
+
+                  <div class="order-name flex-center">
+                      <p><%=order.name%></p>
+                  </div>
+
+                  <div class="order-quantity flex-center">
+                      <p class="label">Quantity</p>
+                      <div class="quantity-btn flex-center">
+                          <button onclick="changeQuantity('<%= order.name %>', 'decrease')">-</button>
+                          <p><%= order.quantity %></p>
+                          <button onclick="changeQuantity('<%= order.name %>', 'increase')">+</button>
+                      </div>
+                  </div>
+
+
+                  <div class="order-price flex-center">
+                      <p class="label">Price</p>
+                      <p class="price">₱<%=order.price%>.00</p>
+                  </div>
+
+                  <div class="order-remove flex-center">
+                      <button type="button" class="delete-order-btn" data-cakename="<%=order.name%>">
+                          <img src="images/icon/trash.svg" alt="">
+                      </button>
+                  </div>
+              </div>
+
+          <% })} %>
+
+
+          </div>
+          <div class="order-payment flex-center">
+              <%if(locals.total && locals.orders) {%>
+                  <h2>Order Summary</h2>
+                  <div class="summary-inner flex-center">
+                      <h4>NO. ITEMS</h4>
+                      <p><%=orders%></p>
+                  </div>
+                  <div class="summary-inner flex-center">
+                      <h4>TOTAL</h4>
+                      <p>₱<%=total%>.00</p>
+                  </div>
+                  <a href="/payment">
+                      Proceed Checkout
+                  </a>
+                  <img src="images\icon\gcash.png" alt="">
+              <%}%>
+          </div>
+      </div>
+  </section>
+
+  <div id="delete-modal" class="delete-modal-overlay">
+      <div class="delete-modal">
+          <h3>Remove Item</h3>
+          <p id="delete-message">Are you sure you want to remove this item from your tray?</p>
+          <div class="modal-actions">
+          <button id="cancel-delete" class="modal-btn cancel">Cancel</button>
+          <button id="confirm-delete" class="modal-btn delete">Delete</button>
+          </div>
+      </div>
+  </div>
+
+  <script>
+    async function safeJson(res) {
+      const ct = res.headers.get("content-type") || "";
+      if (ct.includes("application/json")) return res.json();
+      try {
+        const text = await res.text();
+        return JSON.parse(text);
+      } catch {
+        return null;
+      }
+    }
+
+    async function changeQuantity(cakeName, action, e) {
+      if (e && e.preventDefault) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      try {
+        const res = await fetch("/order/quantity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ cakeName, action })
+        });
+
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
+
+        if (!res.ok) {
+          console.error("Server returned non-OK for /order/quantity:", res.status, await res.text());
+          return;
+        }
+
+        const data = await safeJson(res);
+        if (!data) {
+          console.error("Failed to parse JSON from /order/quantity response");
+          return;
+        }
+
+        const btn = Array.from(document.querySelectorAll('.quantity-btn button'))
+          .find(b => (b.getAttribute('onclick') || '').includes(cakeName));
+        const qtyEl = btn ? btn.parentNode.querySelector("p") : null;
+
+        if (qtyEl) {
+          qtyEl.textContent = data.newQuantity;
+          qtyEl.classList.add("fade-update");
+          setTimeout(() => qtyEl.classList.remove("fade-update"), 500);
+        }
+
+        const row = qtyEl ? qtyEl.closest(".order-con") : null;
+        if (row && typeof data.newItemTotal !== "undefined") {
+          const priceEl = row.querySelector(".order-price .price");
+          if (priceEl) {
+            priceEl.textContent = `₱${data.newItemTotal}.00`;
+            priceEl.classList.add("fade-update");
+            setTimeout(() => priceEl.classList.remove("fade-update"), 500);
+          }
+        }
+
+        const totalLabel = Array.from(document.querySelectorAll('.summary-inner')).find(el =>
+          el.querySelector('h4')?.textContent.trim() === 'TOTAL'
+        );
+        if (totalLabel) {
+          const totalP = totalLabel.querySelector('p');
+          if (totalP) {
+            totalP.textContent = `₱${data.newTotal}.00`;
+            totalP.classList.add("fade-update");
+            setTimeout(() => totalP.classList.remove("fade-update"), 500);
+          }
+        }
+
+        const itemLabel = Array.from(document.querySelectorAll('.summary-inner')).find(el =>
+          el.querySelector('h4')?.textContent.trim() === 'NO. ITEMS'
+        );
+        if (itemLabel && typeof data.orderCount !== "undefined") {
+          const itemP = itemLabel.querySelector('p');
+          if (itemP) {
+            itemP.textContent = data.orderCount;
+            itemP.classList.add("fade-update");
+            setTimeout(() => itemP.classList.remove("fade-update"), 500);
+          }
+        }
+
+        const cartEl = document.getElementById("cart-count");
+        if (cartEl && typeof data.orderCount !== "undefined") {
+          cartEl.textContent = data.orderCount;
+          cartEl.classList.add("cart-pop");
+          setTimeout(() => cartEl.classList.remove("cart-pop"), 300);
+        }
+
+        if (data.newQuantity === 0 && qtyEl) {
+          const row = qtyEl.closest(".order-con");
+          if (row) {
+            row.classList.add("fade-update");
+            setTimeout(() => row.remove(), 350);
+          }
+        }
+
+      } catch (err) {
+        console.error("Error in changeQuantity:", err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const deleteButtons = document.querySelectorAll(".delete-order-btn");
+      const modal = document.getElementById("delete-modal");
+      const confirmBtn = document.getElementById("confirm-delete");
+      const cancelBtn = document.getElementById("cancel-delete");
+      const msg = document.getElementById("delete-message");
+      let pendingDelete = null;
+
+      function showModal(cakeName, btn) {
+        msg.textContent = `Remove "${cakeName}" from your tray?`;
+        modal.style.display = "flex";
+        pendingDelete = { cakeName, btn };
+      }
+
+      function hideModal() {
+        modal.style.display = "none";
+        pendingDelete = null;
+      }
+
+      cancelBtn.addEventListener("click", hideModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) hideModal();
+      });
+
+      confirmBtn.addEventListener("click", async () => {
+        if (!pendingDelete) return;
+        const { cakeName, btn } = pendingDelete;
+        hideModal();
+
+        try {
+          const res = await fetch("/delete/order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({ cake_name: cakeName })
+          });
+
+          if (!res.ok) {
+            console.error("Delete failed:", res.status, await res.text());
+            return;
+          }
+
+          const data = await safeJson(res);
+          if (!data) {
+            console.error("Delete returned non-json response");
+            return;
+          }
+
+          const orderRow = btn.closest(".order-con");
+          if (orderRow) {
+            orderRow.classList.add("fade-update");
+            setTimeout(() => orderRow.remove(), 300);
+          }
+
+          const cartEl = document.getElementById("cart-count");
+          if (cartEl && typeof data.newOrderCount !== "undefined") {
+            cartEl.textContent = data.newOrderCount;
+            cartEl.classList.add("cart-pop");
+            setTimeout(() => cartEl.classList.remove("cart-pop"), 300);
+          }
+
+          const itemLabel = Array.from(document.querySelectorAll('.summary-inner')).find(el =>
+            el.querySelector('h4')?.textContent.trim() === 'NO. ITEMS'
+          );
+          if (itemLabel && typeof data.newOrderCount !== "undefined") {
+            const itemP = itemLabel.querySelector('p');
+            if (itemP) {
+              itemP.textContent = data.newOrderCount;
+              itemP.classList.add("fade-update");
+              setTimeout(() => itemP.classList.remove("fade-update"), 400);
+            }
+          }
+
+          const totalLabel = Array.from(document.querySelectorAll('.summary-inner')).find(el =>
+            el.querySelector('h4')?.textContent.trim() === 'TOTAL'
+          );
+          if (totalLabel && typeof data.newTotal !== "undefined") {
+            const totalP = totalLabel.querySelector('p');
+            if (totalP) {
+              totalP.textContent = `₱${data.newTotal}.00`;
+              totalP.classList.add("fade-update");
+              setTimeout(() => totalP.classList.remove("fade-update"), 400);
+            }
+          }
+
+        } catch (err) {
+          console.error("Error deleting order:", err);
+        }
+      });
+
+      deleteButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const cakeName = btn.dataset.cakename;
+          showModal(cakeName, btn);
+        });
+      });
+    });
+  </script>
+
+<%- include('footer') %>

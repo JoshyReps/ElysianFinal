@@ -1,0 +1,18 @@
+<%- include('header-auth') %>
+
+<section id="add-cake" class="flex-center">
+  <h2>Add New Cake</h2>
+
+  <form action="/add-cake" method="POST" enctype="multipart/form-data">
+    <label for="name">Cake Name</label>
+    <input type="text" name="name" required>
+
+    <label for="price">Price (₱)</label>
+    <input type="number" name="price" required>
+
+    <label for="img">Upload Image</label>
+    <input type="file" name="img" accept="image/*" required>
+
+    <button type="submit">Add Cake</button>
+  </form>
+</section>
